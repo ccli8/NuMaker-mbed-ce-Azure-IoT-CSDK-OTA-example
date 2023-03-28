@@ -1,0 +1,61 @@
+{
+    "config": {
+        "iothub_client_trace": {
+            "help": "Enable IoT Hub Client tracing",
+            "value": false
+        }
+    },
+    "macros": [
+        "OS_THREAD_LIBSPACE_NUM=6",
+        "USE_PROV_MODULE",
+        "HSM_AUTH_TYPE_CUSTOM"
+    ],
+    "target_overrides": {
+        "*": {
+            "rtos.main-thread-stack-size"               : 16384,
+            "platform.minimal-printf-enable-floating-point" : true,
+            "platform.error-filename-capture-enabled"   : true,
+            "platform.stdio-convert-newlines"           : true,
+            "platform.stdio-baud-rate"                  : 115200,
+            "mbed-trace.enable"                         : true,
+            "mbed-trace.max-level"                      : "TRACE_LEVEL_INFO",
+            "mbed-trace.fea-ipv6"                       : true,
+            "platform.stack-stats-enabled"              : true,
+            "platform.heap-stats-enabled"               : true
+        },
+        "NUMAKER_IOT_M467": {
+            "target.components_add"                 : ["SPIF", "AZIOT_OTA", "AZIOT_OTA_PAL_MCUBOOT", "AZIOT_UHTTP"],
+            "target.network-default-interface-type" : "WIFI",
+            "nsapi.default-wifi-security"           : "WPA_WPA2",
+            "nsapi.default-wifi-ssid"               : "\"SSID\"",
+            "nsapi.default-wifi-password"           : "\"PASSWORD\"",
+            "esp8266.tx"                            : "PC_1",
+            "esp8266.rx"                            : "PC_0",
+            "esp8266.rts"                           : "PC_3",
+            "esp8266.cts"                           : "PC_2",
+            "esp8266.rst"                           : "PC_4",
+            "esp8266.provide-default"               : true,
+            "target.mbed_app_start"                 : "0x11000",
+            "target.mbed_app_size"                  : "0xE3000",
+            "mcuboot.bootloader-build"              : 0,
+            "target.macros_add"                     : ["MCUBOOT_HAVE_LOGGING"],
+            "mcuboot.log-level"                     : "MCUBOOT_LOG_LEVEL_INFO",
+            "mcuboot.primary-slot-address"          : "0x10000",
+            "mcuboot.slot-size"                     : "0xE6000",
+            "mcuboot.scratch-address"               : "0xFE000",
+            "mcuboot.scratch-size"                  : "0x2000",
+            "mcuboot.max-img-sectors"               : "0xE6",
+            "mcuboot.read-granularity"              : 4,
+            "azure-client-ota.aduc-user-config-file"                            : "\"aduc_user_config.h\"",
+            "azure-client-ota-mcuboot.provide-default-secondary-blockdevice"    : true,
+            "azure-client-ota-mcuboot.default-secondary-blockdevice-type"       : "SPIF",
+            "spif-driver.SPI_MOSI"                  : "PJ_1",
+            "spif-driver.SPI_MISO"                  : "PJ_0",
+            "spif-driver.SPI_CLK"                   : "PI_15",
+            "spif-driver.SPI_CS"                    : "PI_14",
+            "storage.storage_type"                  : "TDB_INTERNAL",
+            "storage_tdb_internal.internal_base_address": "0xF6000",
+            "storage_tdb_internal.internal_size"        : "0x8000"
+        }
+    }
+}
