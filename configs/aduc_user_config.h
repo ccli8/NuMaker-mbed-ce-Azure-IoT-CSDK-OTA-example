@@ -10,6 +10,11 @@
 #define ADUC_CONFIG_H_
 
 /**
+ * @brief Device or module connection string
+ */
+#define ADUC_DEVICE_CONNECTION_STRING       "<DEVICE_CONNECTION_STRING>"
+
+/**
  * @brief Manufacturer of the device (DeviceInfo configuration)
  */
 #define ADUC_DEVICEINFO_MANUFACTURER        "Nuvoton"
@@ -44,11 +49,6 @@
  * @brief Name of the device (AzureDeviceUpdateInterface DeviceProperties configuration)
  */
 #define ADUC_DEVICEPROPERTIES_MODEL         "NuMaker-ADU-Sample-Device"
-
-/**
- * @brief Device or module connection string
- */
-#define ADUC_DEVICE_CONNECTION_STRING       "HostName..."
 
 /**
  * @brief The Device Twin Model Identifier.

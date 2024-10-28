@@ -1,9 +1,9 @@
-# Example for Azure IoT Device Update on Nuvoton's Mbed Enabled boards
+# Example for Azure IoT Device Update on Nuvoton's Mbed CE enabled boards
 
-This is an example to show [Azure IoT Device Update](https://learn.microsoft.com/en-us/azure/iot-hub-device-update/) on Nuvoton's Mbed Enabled boards.
+This is an example to show [Azure IoT Device Update](https://learn.microsoft.com/en-us/azure/iot-hub-device-update/) on Nuvoton's Mbed CE enabled boards.
 It relies on the following modules:
 
--   [Mbed OS](https://github.com/ARMmbed/mbed-os)
+-   [Mbed OS Community Edition](https://github.com/mbed-ce/mbed-os)
 -   [Azure IoT Device SDK port for Mbed OS](https://github.com/ARMmbed/mbed-client-for-azure):
     -   [Azure IoT C SDKs and Libraries](https://github.com/Azure/azure-iot-sdk-c)
     -   [Adapters for Mbed OS](https://github.com/ARMmbed/mbed-client-for-azure/tree/master/mbed/adapters)
@@ -22,29 +22,35 @@ This example is:
 
 -   Integrating with MCUboot for platform layer firmware upgrade.
 
-    **NOTE**: See [MCUboot for Nuvoton's Mbed Enabled boards](https://github.com/OpenNuvoton/mbed-mcuboot-demo/blob/nuvoton_port/NUVOTON_QUICK_START.md) for details.
+    **NOTE**: See [MCUboot for Nuvoton's Mbed CE enabled boards](https://github.com/OpenNuvoton/mbed-mcuboot-demo/blob/nuvoton_port/NUVOTON_QUICK_START.md) for details.
 
 ## Support targets
 
 Platform                                                                    |  Connectivity     | Bootloader        | Firmware candidate storage
 ----------------------------------------------------------------------------|-------------------|-------------------|--------------------------------
-[NuMaker-IoT-M467](https://os.mbed.com/platforms/NUMAKER-IOT-M467/)         | Wi-Fi ESP8266     | MCUboot           | SPI flash
+[NuMaker-IoT-M467](https://www.nuvoton.com/board/numaker-iot-m467/)         | Wi-Fi ESP8266     | MCUboot           | SPI flash
 
 ## Support development tools
 
--   [Arm's Mbed Studio](https://os.mbed.com/docs/mbed-os/v6.16/build-tools/mbed-studio.html)
+Use cmake-based build system.
+Check out [hello world example](https://github.com/mbed-ce/mbed-ce-hello-world) for getting started.
 
--   [Arm's Mbed CLI 1](https://os.mbed.com/docs/mbed-os/v6.16/tools/developing-mbed-cli.html)
+**_NOTE:_** Legacy development tools below are not supported anymore.
+-   [Arm's Mbed Studio](https://os.mbed.com/docs/mbed-os/v6.15/build-tools/mbed-studio.html)
+-   [Arm's Mbed CLI 2](https://os.mbed.com/docs/mbed-os/v6.15/build-tools/mbed-cli-2.html)
+-   [Arm's Mbed CLI 1](https://os.mbed.com/docs/mbed-os/v6.15/tools/developing-mbed-cli.html)
 
-**NOTE**: Support no [Arm's Mbed CLI 2](https://os.mbed.com/docs/mbed-os/v6.16/build-tools/mbed-cli-2.html)
-for [the issue](https://github.com/ARMmbed/mbed-tools/issues/156).
+For [VS Code development](https://github.com/mbed-ce/mbed-os/wiki/Project-Setup:-VS-Code)
+or [OpenOCD as upload method](https://github.com/mbed-ce/mbed-os/wiki/Upload-Methods#openocd),
+install below additionally:
 
-**NOTE**: Support no [Keil Studio Cloud](https://www.keil.arm.com/mbed/)
-for post-build process.
+-   [NuEclipse](https://github.com/OpenNuvoton/Nuvoton_Tools#numicro-software-development-tools): Nuvoton's fork of Eclipse
+-   Nuvoton forked OpenOCD: Shipped with NuEclipse installation package above.
+    Checking openocd version `openocd --version`, it should fix to `0.10.022`.
 
 ## Developer guide
 
-This chapter is intended for developers to get started, import the example application, compile with Mbed CLI 1, and get it running as Azure IoT Device Update enabled device.
+This chapter is intended for developers to get started, import the example application, build, and get it running as Azure IoT Device Update enabled device.
 
 **NOTE**: The following command lines are verified on Windows git-bash environment.
 For other shell environments, check [Inline JSON help](https://github.com/Azure/azure-iot-cli-extension/wiki/Inline-JSON-help)
@@ -55,8 +61,6 @@ on how different shells use line continuation, quotation marks, and escapes char
 -   [NuMaker-IoT-M467 board](https://os.mbed.com/platforms/NUMAKER-IOT-M467/)
 
 ### Software requirements
-
--   [Arm's Mbed CLI 1](https://os.mbed.com/docs/mbed-os/v6.16/tools/developing-mbed-cli.html)
 
 -   [Image tool](https://github.com/mcu-tools/mcuboot/blob/main/docs/imgtool.md)
 
@@ -98,33 +102,51 @@ on how different shells use line continuation, quotation marks, and escapes char
     
 **NOTE**: Make sure you have completed [configuring access control roles](https://learn.microsoft.com/en-us/azure/iot-hub-device-update/configure-access-control-device-update?tabs=portal).
 
-### Compiling with Mbed CLI 1
+### Build the example
 
 In the following, we take NuMaker-IoT-M467 as example board to show this example.
 
 1.  Clone the example and navigate into it
     ```
-    $ git clone https://github.com/OpenNuvoton/NuMaker-mbed-Azure-IoT-CSDK-OTA-example
-    $ cd NuMaker-mbed-Azure-IoT-CSDK-OTA-example
+    $ git clone https://github.com/mbed-nuvoton/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example
+    $ cd NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example
+    $ git checkout -f master
     ```
 
 1.  Deploy necessary libraries
     ```
-    $ mbed deploy
+    $ git submodule update --init
+    ```
+    Or for fast install:
+    ```
+    $ git submodule update --init --filter=blob:none
+    ```
+
+    Deploy further for `mbed-ce-client-for-azure` library:
+    ```
+    $ cd mbed-ce-client-for-azure; \
+    git submodule update --init; \
+    cd ..
+    ```
+    Or for fast install:
+    ```
+    $ cd mbed-ce-client-for-azure; \
+    git submodule update --init --filter=blob:none; \
+    cd ..
     ```
 
 1.  Configure network interface
     -   Ethernet: Need no further configuration.
 
-        **mbed_app.json**:
-        ```json
+        **mbed_app.json5**:
+        ```json5
         "target.network-default-interface-type" : "Ethernet",
         ```
 
     -   WiFi: Configure WiFi `SSID`/`PASSWORD`.
 
-        **mbed_app.json**:
-        ```json
+        **mbed_app.json5**:
+        ```json5
         "target.network-default-interface-type" : "WIFI",
         "nsapi.default-wifi-security"           : "WPA_WPA2",
         "nsapi.default-wifi-ssid"               : "\"SSID\"",
@@ -146,20 +168,21 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
     -   [Update ID version in import manifest](https://learn.microsoft.com/en-us/azure/iot-hub-device-update/import-schema#updateid-object)
     -   Installed criteria for the custom step handler `mcubupdate`
 
-    
-
     1.  In `configs/aduc_user_config.h`, set `ADUC_DEVICEINFO_SW_VERSION` to `1.0.0`.
 
-    1.  Build the example on **NUMAKER_IOT_M467** target and **ARM** toolchain
+    1.  Compile with cmake/ninja
         ```
-        $ mbed compile -m NUMAKER_IOT_M467 -t ARM
+        $ mkdir build; cd build
+        $ cmake .. -GNinja -DCMAKE_BUILD_TYPE=Develop -DMBED_TARGET=NUMAKER_IOT_M467
+        $ ninja
+        $ cd ..
         ```
 
     1.  Append version suffix `_V1.0.0` to the built image file name for distinct from below.
         ```
         $ mv \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example.bin \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0.bin
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example.bin \
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.0.bin
         ```
 
     1.  Sign application binary of first version `1.0.0`
@@ -171,8 +194,8 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
         --header-size 4096 \
         --pad-header \
         -S 0xE6000 \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0.bin \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0_signed.bin
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.0.bin \
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.0_signed.bin
         ```
 
         **NOTE**: This file will be combined with MCUboot bootloader later.
@@ -184,12 +207,12 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
     1.  Combine MCUboot bootloader binary and signed application binary of first version `1.0.0`
         ```
         $ srec_cat \
-        bootloader/MCUboot/mbed-mcuboot-bootloader_m467-iot_spif.bin -Binary -offset 0x0 \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0_signed.bin -Binary -offset 0x10000 \
-        -o BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0_merged.hex -Intel
+        bootloader/MCUboot/mbed-ce-mcuboot-bootloader_m467-iot_spif.bin -Binary -offset 0x0 \
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.0_signed.bin -Binary -offset 0x10000 \
+        -o build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_merged.hex -Intel
         ```
 
-        **NOTE**: The combined file `NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0_merged.hex` is for flash later.
+        **NOTE**: The combined file `NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_merged.hex` is for flash later.
 
         **NOTE**: `-offset 0x0` is to specify start address of MCUboot bootloader.
 
@@ -199,16 +222,18 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
 
     1.  In `configs/aduc_user_config.h`, set `ADUC_DEVICEINFO_SW_VERSION` to `1.0.1`.
 
-    1.  Build the example on **NUMAKER_IOT_M467** target and **ARM** toolchain
+    1.  Re-compile with cmake/ninja
         ```
-        $ mbed compile -m NUMAKER_IOT_M467 -t ARM
+        $ cd build
+        $ ninja
+        $ cd ..
         ```
 
     1.  Append version suffix `_V1.0.1` to the built image file name for distinct from above.
         ```
         $ mv \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example.bin \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1.bin
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example.bin \
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1.bin
         ```
 
     1.  Sign application binary of second version `1.0.1`
@@ -220,8 +245,8 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
         --header-size 4096 \
         --pad-header \
         -S 0xE6000 \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1.bin \
-        BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1.bin \
+        build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
         ```
 
         **NOTE**: For consistency, set application version for MCUboot to `1.0.1+0`.
@@ -236,12 +261,12 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
         --update-version 1.0.1 \
         --compat manufacturer=Nuvoton model=NuMaker-ADU-Sample-Device \
         --step handler=nuvoton/mcubupdate:1 properties='{"installedCriteria": "1.0.1"}' \
-        --file path="./BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin" \
+        --file path="./build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin" \
         > Nuvoton_NuMaker-ADU-Sample-Update_1.0.1.importmanifest.json
         ```
-        
+
         **NOTE**: For consistency, set `--update-version` to `1.0.1`.
-        
+
         **NOTE**: If changed, `--compat` must match `ADUC_COMPAT_PROPERTY_NAMES`, `ADUC_DEVICEPROPERTIES_MANUFACTURER`, and `ADUC_DEVICEPROPERTIES_MODEL`
         in above `configs/aduc_user_config.h`.
 
@@ -262,7 +287,7 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
 
 Flash the first version `1.0.0` by drag-n-drop'ing the built image file generated above onto **NuMaker-IoT-M467** board
 
-`BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.0_merged.hex`
+`build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.0_merged.hex`
 
 ### Operations on Azure portal
 
@@ -270,7 +295,7 @@ Flash the first version `1.0.0` by drag-n-drop'ing the built image file generate
 
     The files generated above are for import:
     -   `Nuvoton_NuMaker-ADU-Sample-Update_1.0.1.importmanifest.json`
-    -   `BUILD/NUMAKER_IOT_M467/ARM/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin`
+    -   `build/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin`
 
     **NOTE**: The import process can take a few minutes to complete.
 
@@ -333,7 +358,7 @@ Thread: 0x20003ce8, Stack size: 2048, Max stack: 608
 
 Device will receive update action `applyDeployment` after you start update deployment on Azure portal:
 ```
-Info: Update Action info string ({"workflow":{"action":3.00000000000000000,"id":"9b410934-b4e2-49d9-aa71-b40bf2265557"},"updateManifest":"{\"manifestVersion\":\"5\",\"updateId\":{\"provider\":\"Nuvoton\",\"name\":\"NuMaker-ADU-Sample-Update\",\"version\":\"1.0.1\"},\"compatibility\":[{\"manufacturer\":\"Nuvoton\",\"model\":\"NuMaker-ADU-Sample-Device\"}],\"instructions\":{\"steps\":[{\"handler\":\"nuvoton\/mcubupdate:1\",\"files\":[\"f7c99108ce676353f\"],\"handlerProperties\":{\"installedCriteria\":\"1.0.1\"}}]},\"files\":{\"f7c99108ce676353f\":{\"fileName\":\"NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin\",\"sizeInBytes\":629688,\"hashes\":{\"sha256\":\"CWPiC5Z8plEOecGF+tASNnqOXWD71A+oJJIBhSt8j8I=\"}}},\"createdDateTime\":\"2023-03-15T09:55:47Z\"}","updateManifestSignature":null,"fileUrls":null}), property version (21)
+Info: Update Action info string ({"workflow":{"action":3.00000000000000000,"id":"9b410934-b4e2-49d9-aa71-b40bf2265557"},"updateManifest":"{\"manifestVersion\":\"5\",\"updateId\":{\"provider\":\"Nuvoton\",\"name\":\"NuMaker-ADU-Sample-Update\",\"version\":\"1.0.1\"},\"compatibility\":[{\"manufacturer\":\"Nuvoton\",\"model\":\"NuMaker-ADU-Sample-Device\"}],\"instructions\":{\"steps\":[{\"handler\":\"nuvoton\/mcubupdate:1\",\"files\":[\"f7c99108ce676353f\"],\"handlerProperties\":{\"installedCriteria\":\"1.0.1\"}}]},\"files\":{\"f7c99108ce676353f\":{\"fileName\":\"NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin\",\"sizeInBytes\":629688,\"hashes\":{\"sha256\":\"CWPiC5Z8plEOecGF+tASNnqOXWD71A+oJJIBhSt8j8I=\"}}},\"createdDateTime\":\"2023-03-15T09:55:47Z\"}","updateManifestSignature":null,"fileUrls":null}), property version (21)
 ......
 Info: Processing current step:
 {
@@ -358,8 +383,8 @@ Info: Determining contract version for 'nuvoton/mcubupdate:1'.
 Info: Caching new content handler for 'nuvoton/mcubupdate:1'.
 Info: No installed criteria settled down. Maybe it is the first time for ADU.
 Info: Upgrade firmware: FileId f7c99108ce676353f
-Info: Upgrade firmware: DownloadUri http://hub-002--hub-002.b.nlu.dl.adu.microsoft.com/eastus/hub-002--hub-002/0b8713a8590744e09b74e74d479828ef/NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
-Info: Upgrade firmware: TargetFilename NuMaker-mbed-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
+Info: Upgrade firmware: DownloadUri http://hub-002--hub-002.b.nlu.dl.adu.microsoft.com/eastus/hub-002--hub-002/0b8713a8590744e09b74e74d479828ef/NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
+Info: Upgrade firmware: TargetFilename NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example_V1.0.1_signed.bin
 Info: Upgrade firmware: SizeInBytes 629688
 Info: Secondary BlockDevice size: 942080 (bytes)
 ......
@@ -430,7 +455,7 @@ You can make the following adjustments:
 
 -   Recreate the prebuilt bootloader binary `mbed-mcuboot-bootloader_m467-iot_spif.bin`.
 
-    Follow [MCUboot for Nuvoton's Mbed Enabled boards](https://github.com/OpenNuvoton/mbed-mcuboot-demo/blob/nuvoton_port/NUVOTON_QUICK_START.md),
+    Follow [MCUboot for Nuvoton's Mbed CE enabled boards](https://github.com/OpenNuvoton/mbed-mcuboot-demo/blob/nuvoton_port/NUVOTON_QUICK_START.md),
     with target name being `NUMAKER_IOT_M467_SPIF`
 
 -   Change attached signing keys `signing-keys.pem` and `signing_keys.c` for production.
@@ -459,8 +484,8 @@ You can make the following adjustments:
         replace with the re-implemented `get_secondary_bd()` in `mbed-mcuboot-demo`.
         The re-implemented `get_secondary_bd()` can be placed anywhere, for example, in `main.cpp`.
 
-        **mbed_app.json**:
-        ```json
+        **mbed_app.json5**:
+        ```json5
         "azure-client-ota-mcuboot.provide-default-secondary-blockdevice"    : null,
         ```
 
