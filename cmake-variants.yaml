@@ -1,0 +1,63 @@
+buildType:
+  default: Develop
+  choices:
+    Develop:
+      short: Develop
+      long: Emit debug information but also optimize
+      buildType: Develop
+    Debug:
+      short: Debug
+      long: Emit debug information and don't optimize
+      buildType: Debug
+    Release:
+      short: Release
+      long: Optimize generated code
+      buildType: Release
+board:
+  default: NUMAKER_IOT_M467
+  choices:
+    NUMAKER_PFM_NANO130:
+      short: NUMAKER_PFM_NANO130
+      settings:
+        MBED_TARGET: NUMAKER_PFM_NANO130
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_PFM_NUC472:
+      short: NUMAKER_PFM_NUC472
+      settings:
+        MBED_TARGET: NUMAKER_PFM_NUC472
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_PFM_M453:
+      short: NUMAKER_PFM_M453
+      settings:
+        MBED_TARGET: NUMAKER_PFM_M453
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_PFM_M487:
+      short: NUMAKER_PFM_M487
+      settings:
+        MBED_TARGET: NUMAKER_PFM_M487
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_IOT_M487:
+      short: NUMAKER_IOT_M487
+      settings:
+        MBED_TARGET: NUMAKER_IOT_M487
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_IOT_M467:
+      short: NUMAKER_IOT_M467
+      settings:
+        MBED_TARGET: NUMAKER_IOT_M467
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_IOT_M252:
+      short: NUMAKER_IOT_M252
+      settings:
+        MBED_TARGET: NUMAKER_IOT_M252
+        UPLOAD_METHOD: OPENOCD
+    NUMAKER_IOT_M263A:
+      short: NUMAKER_IOT_M263A
+      settings:
+        MBED_TARGET: NUMAKER_IOT_M263A
+        UPLOAD_METHOD: OPENOCD
+    NU_M2354:
+      short: NU_M2354
+      settings:
+        MBED_TARGET: NU_M2354
+        UPLOAD_METHOD: OPENOCD
