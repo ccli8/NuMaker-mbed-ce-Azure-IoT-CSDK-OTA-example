@@ -1,14 +1,25 @@
 {
     "config": {
+        "use_dps": {
+            "help": "Enable connecting with IoT Hub via DPS",
+            "options": [null, true],
+            "value": true
+        },
         "iothub_client_trace": {
             "help": "Enable IoT Hub Client tracing",
             "value": false
+        },
+        "target_mbed_app_start": {
+            "help": "Start address of application (replace unsupported target_mbed_app_start)",
+            "macro_name": "MBED_APP_START"
+        },
+        "target_mbed_app_size": {
+            "help": "Maximum size of application (replace unsupported target_mbed_app_size)",
+            "macro_name": "MBED_APP_SIZE"
         }
     },
     "macros": [
-        "OS_THREAD_LIBSPACE_NUM=6",
-        "USE_PROV_MODULE",
-        "HSM_AUTH_TYPE_CUSTOM"
+        "OS_THREAD_LIBSPACE_NUM=6"
     ],
     "target_overrides": {
         "*": {
@@ -24,7 +35,13 @@
             "platform.heap-stats-enabled"               : true
         },
         "NUMAKER_IOT_M467": {
-            "target.components_add"                 : ["SPIF", "AZIOT_OTA", "AZIOT_OTA_PAL_MCUBOOT", "AZIOT_UHTTP"],
+            "target.components_add"                 : [
+                                                        "SPIF",
+                                                        "AZIOT_OTA",
+                                                        "AZIOT_OTA_PAL_MCUBOOT",
+                                                        "AZIOT_UHTTP",
+                                                        "ESPRESSIF_ESP8266"
+                                                      ],
             "target.network-default-interface-type" : "WIFI",
             "nsapi.default-wifi-security"           : "WPA_WPA2",
             "nsapi.default-wifi-ssid"               : "\"SSID\"",
@@ -35,8 +52,8 @@
             "esp8266.cts"                           : "PC_2",
             "esp8266.rst"                           : "PC_4",
             "esp8266.provide-default"               : true,
-            "target.mbed_app_start"                 : "0x11000",
-            "target.mbed_app_size"                  : "0xE3000",
+            "target_mbed_app_start"                 : "0x11000",
+            "target_mbed_app_size"                  : "0xE3000",
             "mcuboot.bootloader-build"              : 0,
             "target.macros_add"                     : ["MCUBOOT_HAVE_LOGGING"],
             "mcuboot.log-level"                     : "MCUBOOT_LOG_LEVEL_INFO",

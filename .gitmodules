@@ -1,0 +1,3 @@
+[submodule "ntp-client"]
+	path = ntp-client
+	url = https://github.com/ARMmbed/ntp-client
