@@ -1,14 +1,17 @@
 {
     "config": {
+        "use_dps": {
+            "help": "Enable connecting with IoT Hub via DPS",
+            "options": [null, true],
+            "value": null
+        },
         "iothub_client_trace": {
             "help": "Enable IoT Hub Client tracing",
             "value": false
         }
     },
     "macros": [
-        "OS_THREAD_LIBSPACE_NUM=6",
-        "USE_PROV_MODULE",
-        "HSM_AUTH_TYPE_CUSTOM"
+        "OS_THREAD_LIBSPACE_NUM=6"
     ],
     "target_overrides": {
         "*": {
@@ -24,7 +27,13 @@
             "platform.heap-stats-enabled"               : true
         },
         "NUMAKER_IOT_M467": {
-            "target.components_add"                 : ["SPIF", "AZIOT_OTA", "AZIOT_OTA_PAL_MCUBOOT", "AZIOT_UHTTP"],
+            "target.components_add"                 : [
+                                                        "SPIF",
+                                                        "AZIOT_OTA",
+                                                        "AZIOT_OTA_PAL_MCUBOOT",
+                                                        "AZIOT_UHTTP",
+                                                        "ESPRESSIF_ESP8266"
+                                                      ],
             "target.network-default-interface-type" : "WIFI",
             "nsapi.default-wifi-security"           : "WPA_WPA2",
             "nsapi.default-wifi-ssid"               : "\"SSID\"",
@@ -35,14 +44,18 @@
             "esp8266.cts"                           : "PC_2",
             "esp8266.rst"                           : "PC_4",
             "esp8266.provide-default"               : true,
-            "target.mbed_app_start"                 : "0x11000",
-            "target.mbed_app_size"                  : "0xE3000",
+            "target.memory_bank_config": {
+                "IROM1": {
+                    "start": 0x11000,
+                    "size": 0xE3000
+                }
+            },
             "mcuboot.bootloader-build"              : 0,
             "target.macros_add"                     : ["MCUBOOT_HAVE_LOGGING"],
             "mcuboot.log-level"                     : "MCUBOOT_LOG_LEVEL_INFO",
             "mcuboot.primary-slot-address"          : "0x10000",
             "mcuboot.slot-size"                     : "0xE6000",
-            "mcuboot.scratch-address"               : "0xFE000",
+            "mcuboot.scratch-address"               : "0xFD000",
             "mcuboot.scratch-size"                  : "0x2000",
             "mcuboot.max-img-sectors"               : "0xE6",
             "mcuboot.read-granularity"              : 4,
@@ -55,7 +68,7 @@
             "spif-driver.SPI_CS"                    : "PI_14",
             "storage.storage_type"                  : "TDB_INTERNAL",
             "storage_tdb_internal.internal_base_address": "0xF6000",
-            "storage_tdb_internal.internal_size"        : "0x8000"
+            "storage_tdb_internal.internal_size"        : "0x7000"
         }
     }
 }

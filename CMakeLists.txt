@@ -1,31 +1,42 @@
-# Copyright (c) 2020 ARM Limited. All rights reserved.
+# Copyright (c) 2022 ARM Limited. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.19.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(VERSION 3.19)
 
-set(MBED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/mbed-os CACHE INTERNAL "")
-set(MBED_CONFIG_PATH ${CMAKE_CURRENT_BINARY_DIR} CACHE INTERNAL "")
-set(APP_TARGET NuMaker-mbed-Azure-IoT-CSDK-OTA-example)
+set(MBED_OS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/mbed-os CACHE INTERNAL "")
 
-include(${MBED_PATH}/tools/cmake/app.cmake)
+# Set path for mbed_app.json5
+set(MBED_APP_JSON_PATH mbed_app.json5)
 
-project(${APP_TARGET})
+# Set path for custom_targets.json5
+set(CUSTOM_TARGETS_PATH custom_targets) 
+set(CUSTOM_TARGETS_JSON_PATH ${CUSTOM_TARGETS_PATH}/custom_targets.json5) 
 
-# Mbed CLI 2 fails to pass MBED_APP_START and friends to build system. See:
-# https://github.com/ARMmbed/mbed-tools/issues/156
-message(FATAL_ERROR
-        "Mbed CLI 2 doesn't support locating application to another address. "
-        "Use Mbed CLI 1 instead. "
-        "See: https://github.com/ARMmbed/mbed-tools/issues/156"
-)
+# Load Mbed CE toolchain file and basic build system
+include(${MBED_OS_PATH}/tools/cmake/app.cmake)
 
-add_subdirectory(${MBED_PATH})
-add_subdirectory(mbed-client-for-azure)
+set(APP_PROJECT NUMAKER_MBED_CE_AZURE_IOT_CSDK_OTA_EXAMPLE)
+set(APP_TARGET NuMaker-mbed-ce-Azure-IoT-CSDK-OTA-example)
+
+# Set up project name
+project(${APP_PROJECT})
+
+# Add Mbed OS library
+add_subdirectory(${MBED_OS_PATH})
+
+# Add other libraries
+add_subdirectory(mbed-ce-client-for-azure)
 add_subdirectory(ntp-client)
 
-add_executable(${APP_TARGET})
+# User-provided MBED_CONF_AZURE_CLIENT_OTA_ADUC_USER_CONFIG_FILE (aduc_user_config.h)
+# for mbed-ce-client-for-azure (COMPONENT_AZIOT_OTA)
+target_include_directories(mbed-ce-client-for-azure
+    PRIVATE
+        configs
+)
 
-mbed_configure_app_target(${APP_TARGET})
+add_executable(${APP_TARGET})
 
 target_include_directories(${APP_TARGET}
     PRIVATE
@@ -34,32 +45,77 @@ target_include_directories(${APP_TARGET}
 
 target_sources(${APP_TARGET}
     PRIVATE
-        hsm_custom/custom_hsm_example.c
         src/main.cpp
         src/mem_stats.cpp
 )
 
-if("AZIOT_OTA" IN_LIST MBED_TARGET_LABELS)
-    target_include_directories(${APP_TARGET}
+# Use DPS
+if("MBED_CONF_APP_USE_DPS=1" IN_LIST MBED_CONFIG_DEFINITIONS)
+    # DPS NOT SUPPORT
+    message(FATAL_ERROR "DPS NOT SUPPORT")
+
+    target_sources(${APP_TARGET}
         PRIVATE
-            configs/COMPONENT_AZIOT_OTA
+            hsm_custom/custom_hsm_example.c
+    )
+
+    target_compile_definitions(mbed-ce-client-for-azure
+        PUBLIC
+            USE_PROV_MODULE_FULL
+            USE_PROV_MODULE
+            HSM_AUTH_TYPE_CUSTOM
     )
 endif()
 
 target_link_libraries(${APP_TARGET}
     PRIVATE
-        mbed-client-for-azure
         mbed-os
-        mbed-storage-kvstore
+        mbed-ce-client-for-azure
         ntp-client
-        mbed-mbedtls
-        mbed-netsocket
-        mbed-wifi
 )
 
+# Change flash image name for "ninja flash-<app>", where <app>_merged.hex
+# is the combined image in post-build process
+#
+# "<app>.bin/hex" -> "<app>_merged.hex"
+function(mbed_generate_upload_target target)
+    gen_upload_target(${target} ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_FILE_BASE_NAME:${target}>_merged.hex)
+endfunction()
+
+# Change flash image name for GDB debug, where <app>_merged.hex is the
+# combined image in post-build process
+#
+# "load" -> "load <app>_merged.hex"
+function(mbed_adjust_upload_debug_commands target)
+    # MBED_UPLOAD_LAUNCH_COMMANDS defined?
+    if(NOT DEFINED MBED_UPLOAD_LAUNCH_COMMANDS)
+        return()
+    endif()
+
+    # GDB load command in MBED_UPLOAD_LAUNCH_COMMANDS?
+    list(FIND MBED_UPLOAD_LAUNCH_COMMANDS "load" LOAD_INDEX)
+    if(${LOAD_INDEX} LESS "0")
+        return()
+    endif()
+
+    # <app>_merged.hex for debug launch load
+    set(MERGED_HEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_FILE_BASE_NAME:${target}>_merged.hex)
+
+    # "load" -> "load <app>_merged.hex"
+    #
+    # GDB load command doesn't support binary format. Ignore OUTPUT_EXT
+    # and fix to Intel Hex format.
+    #
+    # NOTE: The <app>_merged.hex file name needs to be quoted (\\\") to pass along
+    #       to gdb correctly.
+    list(TRANSFORM MBED_UPLOAD_LAUNCH_COMMANDS APPEND " \\\"${MERGED_HEX_FILE}\\\"" AT ${LOAD_INDEX})
+
+    # Update MBED_UPLOAD_LAUNCH_COMMANDS in cache
+    set(MBED_UPLOAD_LAUNCH_COMMANDS ${MBED_UPLOAD_LAUNCH_COMMANDS} CACHE INTERNAL "" FORCE)
+endfunction()
+
+# Must call this for each target to set up bin file creation, code upload, etc
 mbed_set_post_build(${APP_TARGET})
 
-option(VERBOSE_BUILD "Have a verbose build process")
-if(VERBOSE_BUILD)
-    set(CMAKE_VERBOSE_MAKEFILE ON)
-endif()
+# Make sure this is the last line of the top-level build script
+mbed_finalize_build()
