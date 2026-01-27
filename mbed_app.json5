@@ -1,11 +1,11 @@
 {
     "config": {
-        "use_dps": {
+        "use-dps": {
             "help": "Enable connecting with IoT Hub via DPS",
-            "options": [null, true],
+            "accepted_values": [null, true],
             "value": null
         },
-        "iothub_client_trace": {
+        "iothub-client-trace": {
             "help": "Enable IoT Hub Client tracing",
             "value": false
         }
@@ -62,10 +62,10 @@
             "azure-client-ota.aduc-user-config-file"                            : "\"aduc_user_config.h\"",
             "azure-client-ota-mcuboot.provide-default-secondary-blockdevice"    : true,
             "azure-client-ota-mcuboot.default-secondary-blockdevice-type"       : "SPIF",
-            "spif-driver.SPI_MOSI"                  : "PJ_1",
-            "spif-driver.SPI_MISO"                  : "PJ_0",
-            "spif-driver.SPI_CLK"                   : "PI_15",
-            "spif-driver.SPI_CS"                    : "PI_14",
+            "spif-driver.spi-mosi"                  : "PJ_1",
+            "spif-driver.spi-miso"                  : "PJ_0",
+            "spif-driver.spi-clk"                   : "PI_15",
+            "spif-driver.spi-cs"                    : "PI_14",
             "storage.storage_type"                  : "TDB_INTERNAL",
             "storage_tdb_internal.internal_base_address": "0xF6000",
             "storage_tdb_internal.internal_size"        : "0x7000"

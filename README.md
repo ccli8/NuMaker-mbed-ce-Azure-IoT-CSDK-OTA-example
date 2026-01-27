@@ -173,7 +173,7 @@ In the following, we take NuMaker-IoT-M467 as example board to show this example
     1.  Compile with cmake/ninja
         ```
         $ mkdir build; cd build
-        $ cmake .. -GNinja -DCMAKE_BUILD_TYPE=Develop -DMBED_TARGET=NUMAKER_IOT_M467
+        $ cmake .. -GNinja -DCMAKE_BUILD_TYPE=Develop -DMBED_TARGET=NUMAKER_IOT_M467 -DMCUBOOT_SIGNING_KEY="bootloader/MCUboot/signing-keys.pem" -DMBED_USE_SHALLOW_SUBMODULES=FALSE
         $ ninja
         $ cd ..
         ```
