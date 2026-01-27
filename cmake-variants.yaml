@@ -61,3 +61,17 @@ board:
       settings:
         MBED_TARGET: NU_M2354
         UPLOAD_METHOD: OPENOCD
+mcubootSigningKeys:
+  default: Test
+  choices:
+    Test:
+      short: Test
+      settings:
+        MCUBOOT_SIGNING_KEY: bootloader/MCUboot/signing-keys.pem
+shallowSubmodules:
+  default: Disabled
+  choices:
+    Disabled:
+      short: Disabled
+      settings:
+        MBED_USE_SHALLOW_SUBMODULES: FALSE
